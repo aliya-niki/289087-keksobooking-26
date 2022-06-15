@@ -1,7 +1,7 @@
 # Личный проект «Кексобукинг»
 
 * Студент: [Aliya](https://up.htmlacademy.ru/javascript/26/user/289087).
-* Наставник: `Неизвестно`.
+* Наставник: [Дина Абрамова](https://htmlacademy.ru/profile/id1483099).
 
 ---
 
