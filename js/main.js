@@ -1,6 +1,10 @@
 // 1 - Функция, возвращающая случайное целое число из переданного диапазона включительно.
 
 const getRandomInteger = (minNumber, maxNumber) => {
+  if (maxNumber < 0 || minNumber < 0) {
+    throw new Error('Arguments must be positive or zero');
+  }
+
   if (maxNumber > minNumber) {
     return minNumber + Math.floor(Math.random() * (maxNumber + 1 - minNumber));
   }
@@ -18,6 +22,10 @@ getRandomInteger(0, 0);
 
 const getRandomFloat = (minNumber, maxNumber, decimals) => {
   let random;
+
+  if (maxNumber < 0 || minNumber < 0) {
+    throw new Error('Arguments must be positive or zero');
+  }
 
   if (maxNumber > minNumber) {
     random = minNumber + Math.random() * (maxNumber - minNumber);
