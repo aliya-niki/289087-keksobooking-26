@@ -1,41 +1,157 @@
-// 1 - Функция, возвращающая случайное целое число из переданного диапазона включительно.
+function getRandomPositiveInteger (a, b) {
+  const lower = Math.ceil(Math.min(Math.abs(a), Math.abs(b)));
+  const upper = Math.floor(Math.max(Math.abs(a), Math.abs(b)));
+  const result = Math.random() * (upper - lower + 1) + lower;
+  return Math.floor(result);
+}
 
-const getRandomInteger = (minNumber, maxNumber) => {
-  if (maxNumber < 0 || minNumber < 0) {
-    throw new Error('Arguments must be positive or zero');
+function getRandomPositiveFloat (a, b, digits = 1) {
+  const lower = Math.min(Math.abs(a), Math.abs(b));
+  const upper = Math.max(Math.abs(a), Math.abs(b));
+  const result = Math.random() * (upper - lower) + lower;
+  return +result.toFixed(digits);
+}
+
+const PROPERTIES_NUMBER = 10;
+
+const AVATARS_ID_MIN = 1;
+const AVATARS_ID_MAX = 10;
+
+const PHOTOS = [
+  'https://assets.htmlacademy.ru/content/intensive/javascript-1/keksobooking/duonguyen-8LrGtIxxa4w.jpg',
+  'https://assets.htmlacademy.ru/content/intensive/javascript-1/keksobooking/brandon-hoogenboom-SNxQGWxZQi0.jpg',
+  'https://assets.htmlacademy.ru/content/intensive/javascript-1/keksobooking/claire-rendall-b6kAwr1i0Iw.jpg'
+];
+
+const FEATURES = [
+  'wifi',
+  'dishwasher',
+  'parking',
+  'washer',
+  'elevator',
+  'conditioner'
+];
+
+const TITLES = [
+  'Маленькая квартирка рядом с парком',
+  'Чёткая хата',
+  'Небольшая лавочка в парке',
+  'Уютное гнездышко для молодоженов',
+  'Стандартная квартира в центре'
+];
+
+const TYPES = [
+  'palace',
+  'flat',
+  'house',
+  'bungalow',
+  'hotel'
+];
+
+const CHECKIN_TIMES = [
+  '12:00',
+  '13:00',
+  '14:00'
+];
+
+const CHECKOUT_TIMES = [
+  '12:00',
+  '13:00',
+  '14:00'
+];
+
+const DESCRIPTIONS = [
+  'Отель для ценителей истории. Почуствуй себя героем из прошлого.',
+  'Великолепная лавочка прямо в центре парка. Подходит для всех кто любит спать на свежем воздухе.',
+  'Комната в трёхкомнатной квартире, подойдёт молодым путешественникам.',
+  'Один из лучших хостелов для душевного общения. Ужинаем вместе и играем в «Мафию» по вечерам, вкусно готовим.',
+  'Замечательный дворец в старинном центре города. Только для тех кто может себе позволить дворец. Лакеев и прочих жокеев просим не беспокоить.'
+];
+
+const getRandomArrayElement = (elements) => elements[getRandomPositiveInteger(0, elements.length - 1)];
+
+const shuffle = (array) => {
+  for (let i = array.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [array[i], array[j]] = [array[j], array[i]];
   }
-
-  if (maxNumber > minNumber) {
-    return minNumber + Math.floor(Math.random() * (maxNumber + 1 - minNumber));
-  }
-
-  return maxNumber +  Math.floor(Math.random() * (minNumber + 1 - maxNumber));
 };
 
-getRandomInteger(15, 999);
-getRandomInteger(3, 1);
-getRandomInteger(1, 3);
-getRandomInteger(0, 1);
-getRandomInteger(0, 0);
+const generateUnorderedNumbersArray = (lower, upper) => {
+  const arrayLength = upper - lower;
+  const numbers = [];
 
-// 2 - Функция, возвращающая случайное число с плавающей точкой из переданного диапазона включительно.
-
-const getRandomFloat = (minNumber, maxNumber, decimals) => {
-  let random;
-
-  if (maxNumber < 0 || minNumber < 0) {
-    throw new Error('Arguments must be positive or zero');
+  for (let i = 0; i <= arrayLength; i++) {
+    numbers.push(lower + i);
   }
 
-  if (maxNumber > minNumber) {
-    random = minNumber + Math.random() * (maxNumber - minNumber);
-  } else {
-    random = maxNumber +  Math.random() * (minNumber - maxNumber);
-  }
-
-  return +random.toFixed(decimals);
+  shuffle(numbers);
+  return numbers;
 };
 
-getRandomFloat(7.777, 7.778, 3);
-getRandomFloat(0.777, 4.478, 4);
-getRandomFloat(1.2, 1.19, 4);
+const createAvatarsUrls = (lower, upper) => {
+  const ids = generateUnorderedNumbersArray(lower, upper);
+  const urls = [];
+
+  for (const id of ids) {
+    urls.push(`img/avatars/user${String(id).padStart(2, '0')}.png`);
+  }
+
+  return urls;
+};
+
+const avatars = createAvatarsUrls(AVATARS_ID_MIN, AVATARS_ID_MAX);
+
+const createPhotosArray = (elements) => {
+  const photos = [];
+  for (let i = 0; i < getRandomPositiveInteger(1, 5); i++) {
+    photos.push(getRandomArrayElement(elements));
+  }
+  return photos;
+};
+
+const createFeaturesArray = (elements) => {
+  const randomLength = getRandomPositiveInteger(1, elements.length);
+  const features = new Set();
+
+  for (let i = 1; i <= randomLength; i++) {
+    features.add(getRandomArrayElement(elements));
+  }
+
+  return Array.from(features);
+};
+
+const createProperty = (index) => {
+  const lat = getRandomPositiveFloat(35.65000, 35.70000, 5);
+  const lng = getRandomPositiveFloat(139.70000, 139.80000, 5);
+
+  return {
+    author: {
+      avatar: avatars[index],
+    },
+
+    offer: {
+      title: getRandomArrayElement(TITLES),
+      address: `${lat}, ${lng}`,
+      price: getRandomPositiveInteger(1, 1000),
+      type: getRandomArrayElement(TYPES),
+      rooms: getRandomPositiveInteger(0, 10),
+      guests: getRandomPositiveInteger(1, 10),
+      checkin: getRandomArrayElement(CHECKIN_TIMES),
+      checkout: getRandomArrayElement(CHECKOUT_TIMES),
+      features: createFeaturesArray(FEATURES),
+      description: getRandomArrayElement(DESCRIPTIONS),
+      photos: createPhotosArray(PHOTOS),
+    },
+
+    location: {
+      lat,
+      lng,
+    },
+  };
+};
+
+const properties = [];
+for (let i = 0; i < PROPERTIES_NUMBER; i++) {
+  properties.push(createProperty(i));
+}
