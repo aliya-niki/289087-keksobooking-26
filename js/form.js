@@ -1,7 +1,8 @@
 const adFormElement = document.querySelector('.ad-form');
 const typeInputElement = adFormElement.querySelector('#type');
 const priceInputElement = adFormElement.querySelector('#price');
-const timeInputElement = adFormElement.querySelector('.ad-form__element--time');
+const timeinInputElement = adFormElement.querySelector('#timein');
+const timeoutInputElement = adFormElement.querySelector('#timeout');
 const roomNumberInputElement = adFormElement.querySelector('#room_number');
 const capacityInputElement = adFormElement.querySelector('#capacity');
 const adFormFieldsetElements = adFormElement.querySelectorAll('fieldset');
@@ -42,13 +43,15 @@ pristine.addValidator(capacityInputElement, validateCapacity, getCapacityInvalid
 
 roomNumberInputElement.addEventListener('change', () => pristine.validate(capacityInputElement));
 
-const onTypeInputChange = (evt) => {
+const onTypeChange = (evt) => {
   const value = evt.target.value;
   priceInputElement.placeholder =  minPriceByType[value];
-  pristine.validate(priceInputElement);
+  if (priceInputElement.value.length) {
+    pristine.validate(priceInputElement);
+  }
 };
 
-typeInputElement.addEventListener('change', onTypeInputChange);
+typeInputElement.addEventListener('change', onTypeChange);
 
 const validatePrice = (priceValue) => priceValue.length && parseInt(priceValue, 10) >= minPriceByType[typeInputElement.value];
 const getPriceInvalidMessage = (priceValue) => {
@@ -59,20 +62,17 @@ const getPriceInvalidMessage = (priceValue) => {
 };
 pristine.addValidator(priceInputElement, validatePrice, getPriceInvalidMessage);
 
-const onTimeInputChange = (evt) => {
-  if (evt.target.tagName === 'SELECT') {
-    switch (evt.target.id) {
-      case 'timein':
-        timeInputElement.querySelector('#timeout').value = evt.target.value;
-        break;
-      case 'timeout':
-        timeInputElement.querySelector('#timein').value = evt.target.value;
-        break;
-    }
-  }
+const onTimeinChange = (evt) => {
+  timeoutInputElement.value = evt.target.value;
 };
 
-timeInputElement.addEventListener('change', onTimeInputChange);
+timeinInputElement.addEventListener('change', onTimeinChange);
+
+const onTimeoutChange = (evt) => {
+  timeinInputElement.value = evt.target.value;
+};
+
+timeoutInputElement.addEventListener('change', onTimeoutChange);
 
 const onFormSubmit = (evt) => {
   const isValid = pristine.validate();
@@ -83,8 +83,6 @@ const onFormSubmit = (evt) => {
 
 adFormElement.addEventListener('submit', onFormSubmit);
 
-// Задание 7.2: Отрисуй меня полностью (часть 2):
-// "Реализуйте с помощью JavaScript перевод страницы в неактивное/активное состояние. Все пункты, кроме первого про карту."
 
 // eslint-disable-next-line no-unused-vars
 const toggleFormDisabled = (isActive) => {
@@ -96,13 +94,13 @@ const toggleFormDisabled = (isActive) => {
     mapFiltersFormElement.classList.remove('map__filters--disabled');
   }
 
-  for (let i = 0; i < adFormFieldsetElements.length; i++) {
-    adFormFieldsetElements[i].disabled = !isActive;
-  }
+  adFormFieldsetElements.forEach((element) => {
+    element.disabled = !isActive;
+  });
 
-  for (let i = 0; i < mapFiltersSelectElements.length; i++) {
-    mapFiltersSelectElements[i].disabled = !isActive;
-  }
+  mapFiltersSelectElements.forEach((element) => {
+    element.disabled = !isActive;
+  });
 
   mapFiltersFeatureElement.disabled = !isActive;
 };
