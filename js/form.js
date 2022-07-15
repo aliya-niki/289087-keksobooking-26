@@ -53,25 +53,19 @@ roomNumberInputElement.addEventListener('change', () => pristine.validate(capaci
 
 // Property type & Price Inputs + price slider
 
-const createPriceSlider = (startValue = DEFAULT_START_PRICE) => {
-  const slider = {
-    range: {
-      min: 0,
-      max: MAX_PRICE,
-    },
-    start: startValue,
-    step: 1,
-    connect: 'lower',
-    format: {
-      to: (value) => value.toFixed(0),
-      from: (value) => parseFloat(value),
-    },
-  };
-
-  return slider;
-};
-
-noUiSlider.create(priceSliderElement, createPriceSlider(DEFAULT_START_PRICE));
+noUiSlider.create(priceSliderElement, {
+  range: {
+    min: 0,
+    max: MAX_PRICE,
+  },
+  start: DEFAULT_START_PRICE,
+  step: 1,
+  connect: 'lower',
+  format: {
+    to: (value) => value.toFixed(0),
+    from: (value) => parseFloat(value),
+  },
+});
 
 const onPriceSliderChange = () => {
   priceInputElement.value = priceSliderElement.noUiSlider.get();
@@ -82,12 +76,7 @@ const onTypeChange = (evt) => {
   const value = evt.target.value;
   priceInputElement.placeholder =  minPriceByType[value];
 
-  priceSliderElement.noUiSlider.destroy();
-  noUiSlider.create(priceSliderElement, createPriceSlider(minPriceByType[value]));
-  priceSliderElement.noUiSlider.on('slide', onPriceSliderChange);
-
   if (priceInputElement.value.length) {
-    priceSliderElement.noUiSlider.set(priceInputElement.value);
     pristine.validate(priceInputElement);
   }
 };
