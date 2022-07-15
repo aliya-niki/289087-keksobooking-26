@@ -7,12 +7,12 @@ import {disableForms, enableForms} from './toggle-forms-disabled.js';
 import './form.js';
 import './upload.js';
 
-const properties = createProperties();
-
 const TOKIO_CENTRE_COORDINATE = {
   lat: 35.68027,
   lng: 139.75829,
 };
+
+const properties = createProperties();
 
 disableForms();
 setOnMapLoad(enableForms);

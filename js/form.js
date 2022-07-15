@@ -1,5 +1,9 @@
 import {setOnMainPinMove} from './map.js';
 
+const DEFAULT_START_PRICE = 1000;
+const MAX_PRICE = 100000;
+const ADRRESS_DECIMALS_NUMBER = 5;
+
 const adFormElement = document.querySelector('.ad-form');
 const typeInputElement = adFormElement.querySelector('#type');
 const priceInputElement = adFormElement.querySelector('#price');
@@ -9,8 +13,6 @@ const roomNumberInputElement = adFormElement.querySelector('#room_number');
 const capacityInputElement = adFormElement.querySelector('#capacity');
 const addressInputElement = adFormElement.querySelector('#address');
 const priceSliderElement = adFormElement.querySelector('.ad-form__slider');
-
-const DEFAULT_START_PRICE = 1000;
 
 const minPriceByType = {
   'flat': 1000,
@@ -55,18 +57,14 @@ const createPriceSlider = (startValue = DEFAULT_START_PRICE) => {
   const slider = {
     range: {
       min: 0,
-      max: 100000,
+      max: MAX_PRICE,
     },
     start: startValue,
     step: 1,
     connect: 'lower',
     format: {
-      to: function (value) {
-        return value.toFixed(0);
-      },
-      from: function (value) {
-        return parseFloat(value);
-      },
+      to: (value) => value.toFixed(0),
+      from: (value) => parseFloat(value),
     },
   };
 
@@ -86,7 +84,8 @@ const onTypeChange = (evt) => {
 
   priceSliderElement.noUiSlider.destroy();
   noUiSlider.create(priceSliderElement, createPriceSlider(minPriceByType[value]));
-  priceSliderElement.noUiSlider.on('change', onPriceSliderChange);
+  priceSliderElement.noUiSlider.on('slide', onPriceSliderChange);
+
   if (priceInputElement.value.length) {
     priceSliderElement.noUiSlider.set(priceInputElement.value);
     pristine.validate(priceInputElement);
@@ -95,7 +94,7 @@ const onTypeChange = (evt) => {
 
 typeInputElement.addEventListener('change', onTypeChange);
 
-priceSliderElement.noUiSlider.on('change', onPriceSliderChange);
+priceSliderElement.noUiSlider.on('slide', onPriceSliderChange);
 
 priceInputElement.addEventListener('change', (evt) => {
   priceSliderElement.noUiSlider.set(evt.target.value);
@@ -129,7 +128,7 @@ timeoutInputElement.addEventListener('change', onTimeoutChange);
 // Address Input
 
 const onMapMainPinMove = ({lat, lng}) => {
-  addressInputElement.value = `${lat.toFixed(5)}, ${lng.toFixed(5)}`;
+  addressInputElement.value = `${lat.toFixed(ADRRESS_DECIMALS_NUMBER)}, ${lng.toFixed(ADRRESS_DECIMALS_NUMBER)}`;
 };
 setOnMainPinMove(onMapMainPinMove);
 
