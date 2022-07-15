@@ -1,14 +1,21 @@
 import {createProperties} from './data.js';
-import {createPopup} from './popup.js';
+import './popup.js';
 import './load.js';
-import './map.js';
+import {setAdPins, setOnMapLoad, initMap} from './map.js';
 import './filters.js';
+import {disableForms, enableForms} from './toggle-forms-disabled.js';
 import './form.js';
 import './upload.js';
 
-const mapElement = document.querySelector('.map__canvas');
+const TOKIO_CENTRE_COORDINATE = {
+  lat: 35.68027,
+  lng: 139.75829,
+};
+
 const properties = createProperties();
 
-const popupElements = properties.map((property) => createPopup(property));
+disableForms();
+setOnMapLoad(enableForms);
+initMap(TOKIO_CENTRE_COORDINATE);
+setAdPins(properties);
 
-mapElement.append(popupElements[0]);
