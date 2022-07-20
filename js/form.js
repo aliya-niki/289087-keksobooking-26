@@ -1,12 +1,7 @@
 import {setOnMainPinMove, setMainPinCoordinate} from './map.js';
-import {TOKIO_CENTRE_COORDINATE} from './util.js';
+import {DEFAULT_CENTRE_COORDINATE} from './util.js';
 
 const DEFAULT_START_PRICE = 1000;
-const DEFAULT_TYPE = 'flat';
-const DEFAULT_TIMEIN = '12:00';
-const DEFAULT_TIMEOUT = '12:00';
-const DEFAULT_ROOM_NUMBER = '1';
-const DEFAULT_CAPACITY = '3';
 const MAX_PRICE = 100000;
 const ADRRESS_DECIMALS_NUMBER = 5;
 
@@ -18,11 +13,9 @@ const timeoutInputElement = adFormElement.querySelector('#timeout');
 const roomNumberInputElement = adFormElement.querySelector('#room_number');
 const capacityInputElement = adFormElement.querySelector('#capacity');
 const addressInputElement = adFormElement.querySelector('#address');
-const featuresInputElements = adFormElement.querySelectorAll('.features__checkbox');
-const titleInputElement = adFormElement.querySelector('#title');
-const descriptionInputElement = adFormElement.querySelector('#description');
 const priceSliderElement = adFormElement.querySelector('.ad-form__slider');
 const submitButtonElement = adFormElement.querySelector('.ad-form__submit');
+const resetButtonElement = adFormElement.querySelector('.ad-form__reset');
 
 const minPriceByType = {
   'flat': 1000,
@@ -160,30 +153,19 @@ const setOnAdFormSubmit = (cb) => {
   adFormElement.addEventListener('submit', onFormSubmit);
 };
 
-const clearAdForm = () => {
-  typeInputElement.value = DEFAULT_TYPE;
-  priceInputElement.value = null;
-  priceInputElement.placeholder =  minPriceByType[DEFAULT_TYPE];
-  timeinInputElement.value = DEFAULT_TIMEIN;
-  timeoutInputElement.value = DEFAULT_TIMEOUT;
-  roomNumberInputElement.value = DEFAULT_ROOM_NUMBER;
-  capacityInputElement.value = DEFAULT_CAPACITY;
-  priceSliderElement.noUiSlider.set(DEFAULT_START_PRICE);
-  featuresInputElements.forEach((element) => {
-    element.checked = false;
-  });
-  titleInputElement.value = '';
-  descriptionInputElement.value = '';
-};
-
 // Form Reset
 
-const onAdFormReset = () => {
-  clearAdForm();
-  setMainPinCoordinate(TOKIO_CENTRE_COORDINATE);
-  addressInputElement.setAttribute('value', `${TOKIO_CENTRE_COORDINATE.lat}, ${TOKIO_CENTRE_COORDINATE.lng}`);
+const clearAdForm = () => {
+  adFormElement.reset();
+  setMainPinCoordinate(DEFAULT_CENTRE_COORDINATE);
+  priceSliderElement.noUiSlider.set(DEFAULT_START_PRICE);
 };
 
-adFormElement.addEventListener('reset', onAdFormReset);
+const onResetClick = (evt) => {
+  evt.preventDefault();
+  clearAdForm();
+};
+
+resetButtonElement.addEventListener('click', onResetClick);
 
 export {setOnAdFormSubmit, clearAdForm, unblockSubmitButton};

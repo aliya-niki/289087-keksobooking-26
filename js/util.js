@@ -1,6 +1,6 @@
 const ESC_KEY = 'Escape';
 const ERROR_MESSAGE_TIMEOUT = 7000;
-const TOKIO_CENTRE_COORDINATE = {
+const DEFAULT_CENTRE_COORDINATE = {
   lat: 35.68027,
   lng: 139.75829,
 };
@@ -49,4 +49,4 @@ const showGetDataError = (message) => {
 
 const isEscapeKey = (evt) => evt.key === ESC_KEY;
 
-export {getRandomPositiveInteger, getRandomPositiveFloat, getRandomArrayElement, shuffle, showGetDataError, TOKIO_CENTRE_COORDINATE, isEscapeKey};
+export {getRandomPositiveInteger, getRandomPositiveFloat, getRandomArrayElement, shuffle, showGetDataError, DEFAULT_CENTRE_COORDINATE, isEscapeKey};

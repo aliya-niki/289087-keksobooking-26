@@ -1,9 +1,11 @@
 import {isEscapeKey} from './util.js';
 
-const getMessage = (messageElement) => {
-  const newMessageElement = messageElement.cloneNode(true);
+const renderMessage = (id) => {
+  const messageElement = document.querySelector(id)
+    .content
+    .querySelector('div');
 
-  const closeButtonElement = newMessageElement.querySelector('button');
+  const newMessageElement = messageElement.cloneNode(true);
 
   const onMessageEscKeydown = (evt) => {
     if (isEscapeKey(evt)) {
@@ -23,11 +25,7 @@ const getMessage = (messageElement) => {
   document.addEventListener('keydown', onMessageEscKeydown);
   newMessageElement.addEventListener('click', onMessageClose);
 
-  if (closeButtonElement) {
-    closeButtonElement.addEventListener('click', removeMessage);
-  }
-
-  return newMessageElement;
+  document.body.insertAdjacentElement('beforeend', newMessageElement);
 };
 
-export {getMessage};
+export {renderMessage};
