@@ -1,21 +1,43 @@
-import {createProperties} from './data.js';
+import {getData, sendData} from './api.js';
+import {DEFAULT_CENTRE_COORDINATE, showGetDataError} from './util.js';
 import './popup.js';
-import './load.js';
 import {setAdPins, setOnMapLoad, initMap} from './map.js';
 import './filters.js';
 import {disableForms, enableForms} from './toggle-forms-disabled.js';
-import './form.js';
-import './upload.js';
+import {setOnAdFormSubmit, clearAdForm, unblockSubmitButton} from './form.js';
+import {renderMessage} from './render-message.js';
 
-const TOKIO_CENTRE_COORDINATE = {
-  lat: 35.68027,
-  lng: 139.75829,
+const SUCCESS_MESSAGE_ID = '#success';
+const ERROR_MESSAGE_ID = '#error';
+
+const onDataGetSuccess = (data) => {
+  setAdPins(data);
 };
 
-const properties = createProperties();
+const onDataGetError = (message) => {
+  showGetDataError(message);
+};
+// |--  +заблокировать фильтры
+
+const onDataSendSuccess = () => {
+  clearAdForm();
+  renderMessage(SUCCESS_MESSAGE_ID);
+  unblockSubmitButton();
+};
+// |--  +фильтрация (состояние фильтров и отфильтрованные метки) сбрасывается
+// |--  +если на карте был показан балун, то он должен быть скрыт
+
+const onDataSendError = () => {
+  renderMessage(ERROR_MESSAGE_ID);
+  unblockSubmitButton();
+};
 
 disableForms();
 setOnMapLoad(enableForms);
-initMap(TOKIO_CENTRE_COORDINATE);
-setAdPins(properties);
+initMap(DEFAULT_CENTRE_COORDINATE);
 
+getData(onDataGetSuccess, onDataGetError);
+
+setOnAdFormSubmit(async (data) => {
+  await sendData(onDataSendSuccess, onDataSendError, data);
+});

@@ -1,4 +1,5 @@
-import {setOnMainPinMove} from './map.js';
+import {setOnMainPinMove, setMainPinCoordinate} from './map.js';
+import {DEFAULT_CENTRE_COORDINATE} from './util.js';
 
 const DEFAULT_START_PRICE = 1000;
 const MAX_PRICE = 100000;
@@ -13,6 +14,8 @@ const roomNumberInputElement = adFormElement.querySelector('#room_number');
 const capacityInputElement = adFormElement.querySelector('#capacity');
 const addressInputElement = adFormElement.querySelector('#address');
 const priceSliderElement = adFormElement.querySelector('.ad-form__slider');
+const submitButtonElement = adFormElement.querySelector('.ad-form__submit');
+const resetButtonElement = adFormElement.querySelector('.ad-form__reset');
 
 const minPriceByType = {
   'flat': 1000,
@@ -124,12 +127,45 @@ setOnMainPinMove(onMapMainPinMove);
 
 // Form Submit
 
-const onFormSubmit = (evt) => {
-  const isValid = pristine.validate();
-  if (!isValid) {
-    evt.preventDefault();
-  }
+const blockSubmitButton = () => {
+  submitButtonElement.disabled = true;
+  submitButtonElement.textContent = 'Отправляю...'; // этого нет в ТЗ. пока оставила, чтобы было удобнее проверять
 };
 
-adFormElement.addEventListener('submit', onFormSubmit);
+const unblockSubmitButton = () => {
+  submitButtonElement.disabled = false;
+  submitButtonElement.textContent = 'Опубликовать';
+};
 
+const setOnAdFormSubmit = (cb) => {
+  const onFormSubmit = (evt) => {
+    evt.preventDefault();
+    const isValid = pristine.validate();
+
+    if (isValid) {
+      const formData = new FormData(evt.target);
+
+      blockSubmitButton();
+      cb(formData);
+    }
+  };
+
+  adFormElement.addEventListener('submit', onFormSubmit);
+};
+
+// Form Reset
+
+const clearAdForm = () => {
+  adFormElement.reset();
+  setMainPinCoordinate(DEFAULT_CENTRE_COORDINATE);
+  priceSliderElement.noUiSlider.set(DEFAULT_START_PRICE);
+};
+
+const onResetClick = (evt) => {
+  evt.preventDefault();
+  clearAdForm();
+};
+
+resetButtonElement.addEventListener('click', onResetClick);
+
+export {setOnAdFormSubmit, clearAdForm, unblockSubmitButton};
