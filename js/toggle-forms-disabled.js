@@ -25,9 +25,9 @@ const toggleFiltersDisabled = (isDisabled) => {
   }
 
   mapFiltersSelectElements.forEach((element) => {
-    element.disabled = false;
+    element.disabled = isDisabled;
   });
-  mapFiltersFeatureElement.disabled = false;
+  mapFiltersFeatureElement.disabled = isDisabled;
 };
 
 export {toggleAdFormDisabled, toggleFiltersDisabled};
