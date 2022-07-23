@@ -63,8 +63,8 @@ photoInputElement.addEventListener('change', () => {
   if (isMatches) {
     const photoElement = document.createElement('img');
     photoElement.src = URL.createObjectURL(file);
-    photoElement.width = 70; // размеры родительского div из стилей. ???выносить в константы
-    photoElement.height = 70;
+    photoElement.width = photoPreviewElement.clientWidth;
+    photoElement.height = photoPreviewElement.clientHeight;
     photoElement.alt = 'Фотография жилья';
     photoPreviewElement.append(photoElement);
   }
