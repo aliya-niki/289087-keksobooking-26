@@ -1,9 +1,12 @@
 import {setOnMainPinMove, setMainPinCoordinate} from './map.js';
 import {DEFAULT_CENTRE_COORDINATE} from './util.js';
+import {resetFilters} from './filters.js';
 
 const DEFAULT_START_PRICE = 1000;
 const MAX_PRICE = 100000;
 const ADRRESS_DECIMALS_NUMBER = 5;
+const ALLOWED_IMAGE_TYPES = ['gif', 'jpg', 'jpeg', 'png'];
+const DEFAULT_AVATAR_IMAGE = '../img/muffin-grey.svg';
 
 const adFormElement = document.querySelector('.ad-form');
 const typeInputElement = adFormElement.querySelector('#type');
@@ -13,6 +16,10 @@ const timeoutInputElement = adFormElement.querySelector('#timeout');
 const roomNumberInputElement = adFormElement.querySelector('#room_number');
 const capacityInputElement = adFormElement.querySelector('#capacity');
 const addressInputElement = adFormElement.querySelector('#address');
+const avatarInputElement = adFormElement.querySelector('#avatar');
+const avatarPreviewElement = adFormElement.querySelector('.ad-form-header__preview img');
+const photoInputElement = adFormElement.querySelector('#images');
+const photoPreviewElement = adFormElement.querySelector('.ad-form__photo');
 const priceSliderElement = adFormElement.querySelector('.ad-form__slider');
 const submitButtonElement = adFormElement.querySelector('.ad-form__submit');
 const resetButtonElement = adFormElement.querySelector('.ad-form__reset');
@@ -30,6 +37,38 @@ const pristine = new Pristine(adFormElement, {
   errorTextParent: 'ad-form__element',
 }, true);
 
+
+// Avatar Input & Preview
+
+avatarInputElement.addEventListener('change', () => {
+  const file = avatarInputElement.files[0];
+  const fileName = file.name.toLowerCase();
+
+  const isMatches = ALLOWED_IMAGE_TYPES.some((type) => fileName.endsWith(type));
+
+  if (isMatches) {
+    avatarPreviewElement.src = URL.createObjectURL(file);
+  }
+});
+
+
+// Photos Input & Preview
+
+photoInputElement.addEventListener('change', () => {
+  const file = photoInputElement.files[0];
+  const fileName = file.name.toLowerCase();
+
+  const isMatches = ALLOWED_IMAGE_TYPES.some((type) => fileName.endsWith(type));
+
+  if (isMatches) {
+    const photoElement = document.createElement('img');
+    photoElement.src = URL.createObjectURL(file);
+    photoElement.width = 70; // размеры родительского div из стилей. ???выносить в константы
+    photoElement.height = 70;
+    photoElement.alt = 'Фотография жилья';
+    photoPreviewElement.append(photoElement);
+  }
+});
 
 // Capacity & Rooms number Inputs
 
@@ -137,7 +176,7 @@ const unblockSubmitButton = () => {
   submitButtonElement.textContent = 'Опубликовать';
 };
 
-const setOnAdFormSubmit = (cb) => {
+const setOnAdFormSubmit = (callback) => {
   const onFormSubmit = (evt) => {
     evt.preventDefault();
     const isValid = pristine.validate();
@@ -146,7 +185,7 @@ const setOnAdFormSubmit = (cb) => {
       const formData = new FormData(evt.target);
 
       blockSubmitButton();
-      cb(formData);
+      callback(formData);
     }
   };
 
@@ -159,11 +198,15 @@ const clearAdForm = () => {
   adFormElement.reset();
   setMainPinCoordinate(DEFAULT_CENTRE_COORDINATE);
   priceSliderElement.noUiSlider.set(DEFAULT_START_PRICE);
+  avatarPreviewElement.src = DEFAULT_AVATAR_IMAGE;
+  photoPreviewElement.innerHTML = '';
+  // не сбрасываются сообщения валидации, если они были
 };
 
 const onResetClick = (evt) => {
   evt.preventDefault();
   clearAdForm();
+  resetFilters();
 };
 
 resetButtonElement.addEventListener('click', onResetClick);

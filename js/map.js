@@ -61,12 +61,12 @@ const setAdPins = (properties) => {
   createAdPinMarkers(properties);
 };
 
-const setOnMapLoad = (cb) => {
-  map.on('load', cb);
+const setOnMapLoad = (callback) => {
+  map.on('load', callback);
 };
 
-const setOnMainPinMove = (cb) => {
-  mainPinMarker.on('move', (evt) => cb(evt.target.getLatLng()));
+const setOnMainPinMove = (callback) => {
+  mainPinMarker.on('move', (evt) => callback(evt.target.getLatLng()));
 };
 
 const setMainPinCoordinate = (coordinate) => {
