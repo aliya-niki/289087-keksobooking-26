@@ -4,6 +4,16 @@ import {DEFAULT_CENTRE_COORDINATE} from './util.js';
 const DEFAULT_START_PRICE = 1000;
 const MAX_PRICE = 100000;
 const ADRRESS_DECIMALS_NUMBER = 5;
+const NO_GUESTS_ROOMS_NUMBER = 100;
+const ALLOWED_IMAGE_TYPES = ['gif', 'jpg', 'jpeg', 'png'];
+const DEFAULT_AVATAR_IMAGE = '../img/muffin-grey.svg';
+const MinPriceByType = {
+  'flat': 1000,
+  'bungalow': 0,
+  'house': 5000,
+  'palace': 10000,
+  'hotel': 3000
+};
 
 const adFormElement = document.querySelector('.ad-form');
 const typeInputElement = adFormElement.querySelector('#type');
@@ -13,17 +23,14 @@ const timeoutInputElement = adFormElement.querySelector('#timeout');
 const roomNumberInputElement = adFormElement.querySelector('#room_number');
 const capacityInputElement = adFormElement.querySelector('#capacity');
 const addressInputElement = adFormElement.querySelector('#address');
+const avatarInputElement = adFormElement.querySelector('#avatar');
+const avatarPreviewElement = adFormElement.querySelector('.ad-form-header__preview img');
+const photoInputElement = adFormElement.querySelector('#images');
+const photoPreviewElement = adFormElement.querySelector('.ad-form__photo');
 const priceSliderElement = adFormElement.querySelector('.ad-form__slider');
 const submitButtonElement = adFormElement.querySelector('.ad-form__submit');
 const resetButtonElement = adFormElement.querySelector('.ad-form__reset');
-
-const minPriceByType = {
-  'flat': 1000,
-  'bungalow': 0,
-  'house': 5000,
-  'palace': 10000,
-  'hotel': 3000
-};
+const filtersFormElement = document.querySelector('.map__filters');
 
 const pristine = new Pristine(adFormElement, {
   classTo: 'ad-form__element',
@@ -31,20 +38,52 @@ const pristine = new Pristine(adFormElement, {
 }, true);
 
 
+// Avatar Input & Preview
+
+avatarInputElement.addEventListener('change', () => {
+  const file = avatarInputElement.files[0];
+  const fileName = file.name.toLowerCase();
+
+  const isMatches = ALLOWED_IMAGE_TYPES.some((type) => fileName.endsWith(type));
+
+  if (isMatches) {
+    avatarPreviewElement.src = URL.createObjectURL(file);
+  }
+});
+
+
+// Photos Input & Preview
+
+photoInputElement.addEventListener('change', () => {
+  const file = photoInputElement.files[0];
+  const fileName = file.name.toLowerCase();
+
+  const isMatches = ALLOWED_IMAGE_TYPES.some((type) => fileName.endsWith(type));
+
+  if (isMatches) {
+    const photoElement = document.createElement('img');
+    photoElement.src = URL.createObjectURL(file);
+    photoElement.width = photoPreviewElement.clientWidth;
+    photoElement.height = photoPreviewElement.clientHeight;
+    photoElement.alt = 'Фотография жилья';
+    photoPreviewElement.append(photoElement);
+  }
+});
+
 // Capacity & Rooms number Inputs
 
 const validateCapacity = (capacityValue) => {
   const capacity = parseInt(capacityValue, 10);
   const roomsNumber = parseInt(roomNumberInputElement.value, 10);
 
-  return roomsNumber === 100 ? capacity === 0 : roomsNumber >= capacity && capacity !== 0;
+  return roomsNumber === NO_GUESTS_ROOMS_NUMBER ? capacity === 0 : roomsNumber >= capacity && capacity !== 0;
 };
 
 const getCapacityInvalidMessage = (capacityValue) => {
   const capacity = parseInt(capacityValue, 10);
   const roomsNumber = parseInt(roomNumberInputElement.value, 10);
 
-  if (roomsNumber === 100 && capacity > 0) {
+  if (roomsNumber === NO_GUESTS_ROOMS_NUMBER && capacity > 0) {
     return '100 комнат - не для гостей';
   }
   return 'Количество гостей д.б.не меньше 1 и не может превышать количество комнат';
@@ -77,7 +116,7 @@ const onPriceSliderChange = () => {
 
 const onTypeChange = (evt) => {
   const value = evt.target.value;
-  priceInputElement.placeholder =  minPriceByType[value];
+  priceInputElement.placeholder =  MinPriceByType[value];
 
   if (priceInputElement.value.length) {
     pristine.validate(priceInputElement);
@@ -92,9 +131,9 @@ priceInputElement.addEventListener('change', (evt) => {
   priceSliderElement.noUiSlider.set(evt.target.value);
 });
 
-const validatePrice = (priceValue) => priceValue.length && parseInt(priceValue, 10) >= minPriceByType[typeInputElement.value];
+const validatePrice = (priceValue) => priceValue.length && parseInt(priceValue, 10) >= MinPriceByType[typeInputElement.value];
 const getPriceInvalidMessage = (priceValue) => {
-  const minPrice = minPriceByType[typeInputElement.value];
+  const minPrice = MinPriceByType[typeInputElement.value];
   if (priceValue.length && parseInt(priceValue, 10) <= minPrice) {
     return `Минимальная цена для выбранного типа жилья - ${minPrice} руб`;
   }
@@ -129,7 +168,7 @@ setOnMainPinMove(onMapMainPinMove);
 
 const blockSubmitButton = () => {
   submitButtonElement.disabled = true;
-  submitButtonElement.textContent = 'Отправляю...'; // этого нет в ТЗ. пока оставила, чтобы было удобнее проверять
+  submitButtonElement.textContent = 'Отправляю...';
 };
 
 const unblockSubmitButton = () => {
@@ -137,7 +176,7 @@ const unblockSubmitButton = () => {
   submitButtonElement.textContent = 'Опубликовать';
 };
 
-const setOnAdFormSubmit = (cb) => {
+const setOnAdFormSubmit = (callback) => {
   const onFormSubmit = (evt) => {
     evt.preventDefault();
     const isValid = pristine.validate();
@@ -146,7 +185,7 @@ const setOnAdFormSubmit = (cb) => {
       const formData = new FormData(evt.target);
 
       blockSubmitButton();
-      cb(formData);
+      callback(formData);
     }
   };
 
@@ -155,17 +194,21 @@ const setOnAdFormSubmit = (cb) => {
 
 // Form Reset
 
-const clearAdForm = () => {
+const clearForms = () => {
   adFormElement.reset();
   setMainPinCoordinate(DEFAULT_CENTRE_COORDINATE);
   priceSliderElement.noUiSlider.set(DEFAULT_START_PRICE);
+  avatarPreviewElement.src = DEFAULT_AVATAR_IMAGE;
+  photoPreviewElement.innerHTML = '';
+  pristine.reset();
+  filtersFormElement.reset();
 };
 
 const onResetClick = (evt) => {
   evt.preventDefault();
-  clearAdForm();
+  clearForms();
 };
 
 resetButtonElement.addEventListener('click', onResetClick);
 
-export {setOnAdFormSubmit, clearAdForm, unblockSubmitButton};
+export {setOnAdFormSubmit, clearForms, unblockSubmitButton};

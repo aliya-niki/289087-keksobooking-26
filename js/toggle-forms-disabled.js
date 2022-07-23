@@ -4,34 +4,30 @@ const mapFiltersFormElement = document.querySelector('.map__filters');
 const mapFiltersSelectElements = mapFiltersFormElement.querySelectorAll('.map__filter');
 const mapFiltersFeatureElement = mapFiltersFormElement.querySelector('.map__features');
 
-const disableForms = () => {
-  adFormElement.classList.add('ad-form--disabled');
-  mapFiltersFormElement.classList.add('map__filters--disabled');
+const toggleAdFormDisabled = (isDisabled) => {
+  if (isDisabled) {
+    adFormElement.classList.add('ad-form--disabled');
+  } else {
+    adFormElement.classList.remove('ad-form--disabled');
+  }
 
   adFormFieldsetElements.forEach((element) => {
-    element.disabled = true;
+    element.disabled = isDisabled;
   });
-
-  mapFiltersSelectElements.forEach((element) => {
-    element.disabled = true;
-  });
-
-  mapFiltersFeatureElement.disabled = true;
 };
 
-const enableForms = () => {
-  adFormElement.classList.remove('ad-form--disabled');
-  mapFiltersFormElement.classList.remove('map__filters--disabled');
 
-  adFormFieldsetElements.forEach((element) => {
-    element.disabled = false;
-  });
+const toggleFiltersDisabled = (isDisabled) => {
+  if (isDisabled) {
+    mapFiltersFormElement.classList.add('map__filters--disabled');
+  } else {
+    mapFiltersFormElement.classList.remove('map__filters--disabled');
+  }
 
   mapFiltersSelectElements.forEach((element) => {
-    element.disabled = false;
+    element.disabled = isDisabled;
   });
-
-  mapFiltersFeatureElement.disabled = false;
+  mapFiltersFeatureElement.disabled = isDisabled;
 };
 
-export {disableForms, enableForms};
+export {toggleAdFormDisabled, toggleFiltersDisabled};

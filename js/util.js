@@ -4,29 +4,8 @@ const DEFAULT_CENTRE_COORDINATE = {
   lat: 35.68027,
   lng: 139.75829,
 };
-
-function getRandomPositiveInteger (a, b) {
-  const lower = Math.ceil(Math.min(Math.abs(a), Math.abs(b)));
-  const upper = Math.floor(Math.max(Math.abs(a), Math.abs(b)));
-  const result = Math.random() * (upper - lower + 1) + lower;
-  return Math.floor(result);
-}
-
-function getRandomPositiveFloat (a, b, digits = 1) {
-  const lower = Math.min(Math.abs(a), Math.abs(b));
-  const upper = Math.max(Math.abs(a), Math.abs(b));
-  const result = Math.random() * (upper - lower) + lower;
-  return +result.toFixed(digits);
-}
-
-const getRandomArrayElement = (elements) => elements[getRandomPositiveInteger(0, elements.length - 1)];
-
-const shuffle = (array) => {
-  for (let i = array.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [array[i], array[j]] = [array[j], array[i]];
-  }
-};
+const SIMILAR_ADVERTS_MAX_NUMBER = 10;
+const DELAY = 500;
 
 const showGetDataError = (message) => {
   const errorMessageElement = document.createElement('div');
@@ -49,4 +28,33 @@ const showGetDataError = (message) => {
 
 const isEscapeKey = (evt) => evt.key === ESC_KEY;
 
-export {getRandomPositiveInteger, getRandomPositiveFloat, getRandomArrayElement, shuffle, showGetDataError, DEFAULT_CENTRE_COORDINATE, isEscapeKey};
+const declineRoomWord = (counter) => {
+  if (counter === 0 || counter > 4) {
+    return 'комнат';
+  } else if (counter === 1) {
+    return 'комната';
+  } else if (counter === 2 || counter === 3 || counter === 4) {
+    return 'комнаты';
+  }
+};
+
+// Функция взята из интернета и доработана: https://www.freecodecamp.org/news/javascript-debounce-example
+
+function debounce (callback, timeoutDelay = DELAY) {
+  let timeoutId;
+
+  return (...rest) => {
+    clearTimeout(timeoutId);
+
+    timeoutId = setTimeout(() => callback.apply(this, rest), timeoutDelay);
+  };
+}
+
+export {
+  showGetDataError,
+  DEFAULT_CENTRE_COORDINATE,
+  SIMILAR_ADVERTS_MAX_NUMBER,
+  isEscapeKey,
+  declineRoomWord,
+  debounce
+};

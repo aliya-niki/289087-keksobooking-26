@@ -40,33 +40,33 @@ const initMap = (coordinate) => {
   mainPinMarker.setLatLng(coordinate).addTo(map);
 };
 
-const createAdPinMarkers = (properties) => {
-  properties.forEach((property) => {
+const createAdPinMarkers = (adverts) => {
+  adverts.forEach((advert) => {
     const marker = L.marker(
       {
-        lat: property.location.lat,
-        lng: property.location.lng,
+        lat: advert.location.lat,
+        lng: advert.location.lng,
       },
       {
         icon: adPinIcon,
       }
     );
 
-    marker.addTo(markerGroup).bindPopup(createPopup(property));
+    marker.addTo(markerGroup).bindPopup(createPopup(advert));
   });
 };
 
-const setAdPins = (properties) => {
+const setAdPins = (adverts) => {
   markerGroup.clearLayers();
-  createAdPinMarkers(properties);
+  createAdPinMarkers(adverts);
 };
 
-const setOnMapLoad = (cb) => {
-  map.on('load', cb);
+const setOnMapLoad = (callback) => {
+  map.on('load', callback);
 };
 
-const setOnMainPinMove = (cb) => {
-  mainPinMarker.on('move', (evt) => cb(evt.target.getLatLng()));
+const setOnMainPinMove = (callback) => {
+  mainPinMarker.on('move', (evt) => callback(evt.target.getLatLng()));
 };
 
 const setMainPinCoordinate = (coordinate) => {
