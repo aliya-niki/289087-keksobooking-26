@@ -4,7 +4,7 @@ const DEFAULT_CENTRE_COORDINATE = {
   lat: 35.68027,
   lng: 139.75829,
 };
-const SIMILAR_PROPERTIES_MAX_NUMBER = 10;
+const SIMILAR_ADVERTS_MAX_NUMBER = 10;
 const DELAY = 500;
 
 const showGetDataError = (message) => {
@@ -28,6 +28,16 @@ const showGetDataError = (message) => {
 
 const isEscapeKey = (evt) => evt.key === ESC_KEY;
 
+const declineRoomWord = (counter) => {
+  if (counter === 0 || counter > 4) {
+    return 'комнат';
+  } else if (counter === 1) {
+    return 'комната';
+  } else if (counter === 2 || counter === 3 || counter === 4) {
+    return 'комнаты';
+  }
+};
+
 // Функция взята из интернета и доработана: https://www.freecodecamp.org/news/javascript-debounce-example
 
 function debounce (callback, timeoutDelay = DELAY) {
@@ -43,7 +53,8 @@ function debounce (callback, timeoutDelay = DELAY) {
 export {
   showGetDataError,
   DEFAULT_CENTRE_COORDINATE,
-  SIMILAR_PROPERTIES_MAX_NUMBER,
+  SIMILAR_ADVERTS_MAX_NUMBER,
   isEscapeKey,
+  declineRoomWord,
   debounce
 };

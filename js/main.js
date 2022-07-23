@@ -1,18 +1,18 @@
 import {getData, sendData} from './api.js';
-import {DEFAULT_CENTRE_COORDINATE, SIMILAR_PROPERTIES_MAX_NUMBER, showGetDataError} from './util.js';
+import {DEFAULT_CENTRE_COORDINATE, SIMILAR_ADVERTS_MAX_NUMBER, showGetDataError} from './util.js';
 import './popup.js';
 import {setAdPins, setOnMapLoad, initMap} from './map.js';
-import {setOnFiltersApply, resetFilters} from './filters.js';
-import {disableAdForm, disableFilters, enableAdForm, enableFilters} from './toggle-forms-disabled.js';
-import {setOnAdFormSubmit, clearAdForm, unblockSubmitButton} from './form.js';
+import {setOnFiltersApply} from './filters.js';
+import {toggleAdFormDisabled, toggleFiltersDisabled} from './toggle-forms-disabled.js';
+import {setOnAdFormSubmit, clearForms, unblockSubmitButton} from './form.js';
 import {renderMessage} from './render-message.js';
 
 const SUCCESS_MESSAGE_ID = '#success';
 const ERROR_MESSAGE_ID = '#error';
 
 const onDataGetSuccess = (data) => {
-  enableFilters();
-  setAdPins(data.slice(0, SIMILAR_PROPERTIES_MAX_NUMBER));
+  toggleFiltersDisabled(false);
+  setAdPins(data.slice(0, SIMILAR_ADVERTS_MAX_NUMBER));
   setOnFiltersApply(data);
 };
 
@@ -21,8 +21,7 @@ const onDataGetError = (message) => {
 };
 
 const onDataSendSuccess = () => {
-  clearAdForm();
-  resetFilters();
+  clearForms();
   renderMessage(SUCCESS_MESSAGE_ID);
   unblockSubmitButton();
 };
@@ -32,9 +31,9 @@ const onDataSendError = () => {
   unblockSubmitButton();
 };
 
-disableAdForm();
-disableFilters();
-setOnMapLoad(enableAdForm);
+toggleAdFormDisabled(true);
+toggleFiltersDisabled(true);
+setOnMapLoad(() => toggleAdFormDisabled(false));
 initMap(DEFAULT_CENTRE_COORDINATE);
 
 getData(onDataGetSuccess, onDataGetError);
